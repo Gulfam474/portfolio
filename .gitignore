@@ -1,0 +1,42 @@
+# Environment
+.env
+**/.env
+!.env.example
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Media & generated
+backend/media/
+backend/generated_cv/
+*.pdf
+!docs/**
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+postgres_data/
+redis_data/

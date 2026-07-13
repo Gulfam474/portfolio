@@ -1,0 +1,60 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\pagestyle{empty}
+\setlist{nosep,leftmargin=*}
+
+\begin{document}
+
+{% if personal %}
+\begin{center}
+  {\LARGE\textbf{ {{ personal.full_name | latex_escape }} }}\\[4pt]
+  {{ personal.title | latex_escape }}\\[2pt]
+  {% if personal.location %}{{ personal.location | latex_escape }} \quad{% endif %}
+  {% if personal.email_public %}{{ personal.email_public | latex_escape }} \quad{% endif %}
+  {% if personal.website %}\href{ {{ personal.website }} }{ {{ personal.website | latex_escape }} }{% endif %}
+\end{center}
+
+\vspace{8pt}
+\noindent\textbf{Summary}\\
+{{ personal.bio | latex_escape }}
+{% endif %}
+
+{% if experience %}
+\vspace{10pt}
+\noindent\textbf{Experience}\\
+{% for exp in experience %}
+\textit{ {{ exp.role | latex_escape }} } --- {{ exp.company | latex_escape }}\\
+{\small {{ exp.start_date | latex_escape }} -- {% if exp.is_current %}Present{% else %}{{ exp.end_date | latex_escape }}{% endif %}}\\
+{{ exp.description | latex_escape }}\\[6pt]
+{% endfor %}
+{% endif %}
+
+{% if education %}
+\vspace{6pt}
+\noindent\textbf{Education}\\
+{% for edu in education %}
+\textit{ {{ edu.degree | latex_escape }} } --- {{ edu.institution | latex_escape }}
+{% if edu.end_year %} ({{ edu.end_year }}){% endif %}
+{% if edu.grade %} --- {{ edu.grade | latex_escape }}{% endif %}\\[4pt]
+{% endfor %}
+{% endif %}
+
+{% if skills %}
+\vspace{6pt}
+\noindent\textbf{Skills}\\
+{% for skill in skills %}{{ skill.name | latex_escape }}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endif %}
+
+{% if projects %}
+\vspace{10pt}
+\noindent\textbf{Projects}\\
+{% for proj in projects %}
+\textit{ {{ proj.title | latex_escape }} }{% if proj.tech_stack %} ({{ proj.tech_stack | latex_escape }}){% endif %}\\
+{{ proj.description | latex_escape }}\\[4pt]
+{% endfor %}
+{% endif %}
+
+\end{document}
