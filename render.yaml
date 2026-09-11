@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: portfolio-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /docs
+    envVars:
+      - key: ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: OWNER_EMAIL
+        sync: false
+      - key: STORAGE_BACKEND
+        value: local
+      - key: MEDIA_ROOT
+        value: /tmp/media
+      - key: LATEX_OUTPUT_DIR
+        value: /tmp/generated_cv
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
