@@ -17,10 +17,10 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const canAdmin = usePermission("admin", "view");
-  const canEditSite =
-    usePermission("profile", "edit") ||
-    usePermission("posts", "edit") ||
-    usePermission("cv", "edit");
+  const canEditProfile = usePermission("profile", "edit");
+  const canEditPosts = usePermission("posts", "edit");
+  const canEditCv = usePermission("cv", "edit");
+  const canEditSite = canEditProfile || canEditPosts || canEditCv;
   const isOwner = user?.role?.name === "owner" || canEditSite;
   const theme = useUiStore((s) => s.theme);
   const toggleTheme = useUiStore((s) => s.toggleTheme);
