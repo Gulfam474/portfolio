@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { Eye, Menu, Moon, Pencil, Sun, X } from "lucide-react";
-import { useState } from "react";
+import { Eye, Home, Moon, Pencil, Rss, ShieldCheck, Sun } from "lucide-react";
 import { BrandMark } from "@/components/layout/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +10,12 @@ import { useUiStore } from "@/store/useUiStore";
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
     "relative font-mono text-xs uppercase tracking-[0.16em] transition",
+    isActive ? "text-accent-cyan" : "text-muted hover:text-white",
+  );
+
+const bottomLinkClass = ({ isActive }: { isActive: boolean }) =>
+  cn(
+    "flex flex-1 flex-col items-center justify-center gap-1 py-2 font-mono text-[10px] uppercase tracking-wide transition",
     isActive ? "text-accent-cyan" : "text-muted hover:text-white",
   );
 
@@ -26,10 +31,10 @@ export function Navbar() {
   const toggleTheme = useUiStore((s) => s.toggleTheme);
   const viewMode = useUiStore((s) => s.viewMode);
   const toggleViewMode = useUiStore((s) => s.toggleViewMode);
-  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
+    <>
     <header className="sticky top-0 z-30 border-b border-border-subtle/60 bg-background/55 backdrop-blur-xl">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-cyan/35 to-transparent" />
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
@@ -119,7 +124,28 @@ export function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center gap-1 md:hidden">
+        <div className="flex items-center gap-1.5 md:hidden">
+          {isAuthenticated && isOwner && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={toggleViewMode}
+              aria-label={
+                viewMode === "editor" ? "Switch to read-only preview" : "Switch to editor view"
+              }
+              title={
+                viewMode === "editor" ? "Switch to read-only preview" : "Switch to editor view"
+              }
+            >
+              {viewMode === "editor" ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <Pencil className="h-4 w-4" />
+              )}
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"
@@ -130,85 +156,42 @@ export function Navbar() {
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          <button
-            className="rounded-md p-2 text-muted hover:bg-[color:var(--overlay-hover)] md:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {open && (
-        <div className="space-y-3 border-t border-border-subtle px-4 py-4 md:hidden">
-          <NavLink to="/" end className={linkClass} onClick={() => setOpen(false)}>
-            Overview
-          </NavLink>
-          <div>
-            <NavLink to="/posts" className={linkClass} onClick={() => setOpen(false)}>
-              Posts
-            </NavLink>
-          </div>
-          {canAdmin && viewMode === "editor" && (
-            <div>
-              <NavLink to="/admin" className={linkClass} onClick={() => setOpen(false)}>
-                Admin
-              </NavLink>
-            </div>
-          )}
-          {isAuthenticated && isOwner && (
+          {isAuthenticated ? (
             <Button
-              type="button"
               variant="secondary"
-              className="w-full"
-              onClick={() => {
-                toggleViewMode();
-                setOpen(false);
+              size="sm"
+              onClick={async () => {
+                await logout();
+                navigate("/");
               }}
             >
-              {viewMode === "editor" ? "Read-only preview" : "Editor view"}
+              Logout
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
+              Login
             </Button>
           )}
-          <div className="pt-2">
-            {isAuthenticated ? (
-              <Button
-                variant="secondary"
-                className="w-full"
-                onClick={async () => {
-                  await logout();
-                  setOpen(false);
-                  navigate("/");
-                }}
-              >
-                Logout
-              </Button>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  variant="secondary"
-                  className="flex-1"
-                  onClick={() => {
-                    setOpen(false);
-                    navigate("/login");
-                  }}
-                >
-                  Login
-                </Button>
-                <Button
-                  className="btn-sheen flex-1"
-                  onClick={() => {
-                    setOpen(false);
-                    navigate("/register");
-                  }}
-                >
-                  Register
-                </Button>
-              </div>
-            )}
-          </div>
         </div>
-      )}
+      </div>
     </header>
+
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border-subtle/60 bg-background/90 backdrop-blur-xl md:hidden">
+      <NavLink to="/" end className={bottomLinkClass}>
+        <Home className="h-5 w-5" />
+        Overview
+      </NavLink>
+      <NavLink to="/posts" className={bottomLinkClass}>
+        <Rss className="h-5 w-5" />
+        Posts
+      </NavLink>
+      {canAdmin && viewMode === "editor" && (
+        <NavLink to="/admin" className={bottomLinkClass}>
+          <ShieldCheck className="h-5 w-5" />
+          Admin
+        </NavLink>
+      )}
+    </nav>
+    </>
   );
 }

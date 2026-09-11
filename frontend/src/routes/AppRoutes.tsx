@@ -54,7 +54,7 @@ function AuthCallback() {
 
 export function AppRoutes() {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pb-16 md:pb-0">
       <Atmosphere />
       <Navbar />
       <Routes>
