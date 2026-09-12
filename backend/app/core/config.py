@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     S3_ACCESS_KEY: str = ""
     S3_SECRET_KEY: str = ""
     S3_REGION: str = ""
+    S3_ENDPOINT_URL: str = ""
 
     FRONTEND_URL: str = "http://localhost:5173"
     LATEX_OUTPUT_DIR: str = "./generated_cv"

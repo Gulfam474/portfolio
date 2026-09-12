@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.services.storage_service import resolve_media_url
 
 
 class PersonalInfoBase(BaseModel):
@@ -34,6 +36,11 @@ class PersonalInfoResponse(PersonalInfoBase):
     user_id: int
 
     model_config = {"from_attributes": True}
+
+    @field_validator("avatar_url")
+    @classmethod
+    def _resolve_avatar_url(cls, v: Optional[str]) -> Optional[str]:
+        return resolve_media_url(v)
 
 
 class EducationBase(BaseModel):
@@ -138,6 +145,11 @@ class ProjectResponse(ProjectBase):
 
     model_config = {"from_attributes": True}
 
+    @field_validator("thumbnail_url")
+    @classmethod
+    def _resolve_thumbnail_url(cls, v: Optional[str]) -> Optional[str]:
+        return resolve_media_url(v)
+
 
 class CertificateBase(BaseModel):
     name: str
@@ -172,3 +184,8 @@ class ProfileOverviewResponse(BaseModel):
     projects: list[ProjectResponse] = []
     certificates: list[CertificateResponse] = []
     cv_url: Optional[str] = None
+
+    @field_validator("cv_url")
+    @classmethod
+    def _resolve_cv_url(cls, v: Optional[str]) -> Optional[str]:
+        return resolve_media_url(v)

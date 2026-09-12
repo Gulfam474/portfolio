@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +17,7 @@ from app.models.cv import CVFile
 from app.models.user import User
 from app.schemas.cv import CVFileResponse
 from app.services.latex_service import generate_cv_pdf
-from app.services.storage_service import save_upload
+from app.services.storage_service import resolve_media_url, save_upload
 
 router = APIRouter(prefix="/cv", tags=["cv"])
 
@@ -104,6 +104,8 @@ async def download_cv(db: Annotated[AsyncSession, Depends(get_db)]):
         record = result.scalar_one_or_none()
     if record is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No CV uploaded")
+    if settings.STORAGE_BACKEND == "s3":
+        return RedirectResponse(resolve_media_url(record.url))
     path = Path(record.storage_path)
     if not path.exists():
         media = Path(settings.MEDIA_ROOT)

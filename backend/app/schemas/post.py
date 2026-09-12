@@ -5,7 +5,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.services.storage_service import resolve_media_url
 
 
 class AuthorBrief(BaseModel):
@@ -14,6 +16,11 @@ class AuthorBrief(BaseModel):
     avatar_url: Optional[str] = None
 
     model_config = {"from_attributes": True}
+
+    @field_validator("avatar_url")
+    @classmethod
+    def _resolve_avatar_url(cls, v: Optional[str]) -> Optional[str]:
+        return resolve_media_url(v)
 
 
 class PostCreate(BaseModel):
@@ -39,6 +46,11 @@ class PostResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+    @field_validator("image_url")
+    @classmethod
+    def _resolve_image_url(cls, v: Optional[str]) -> Optional[str]:
+        return resolve_media_url(v)
 
 
 class PostListResponse(BaseModel):
